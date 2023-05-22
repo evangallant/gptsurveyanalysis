@@ -1,5 +1,7 @@
 import config, questionanalyzer
 import aicontent
+from responsemanager import response_manager
+from questionanalyzer import individual_question_analyzer
 
 # ***********  FULL ANALYSIS PATH  ***********
 
