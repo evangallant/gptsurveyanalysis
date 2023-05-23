@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    {% block head %}
+    <title>{% block title %}{% endblock %} - Survey Analysis</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
