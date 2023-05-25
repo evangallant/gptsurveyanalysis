@@ -1,6 +1,6 @@
-import config
-import openAI
 import tiktoken
+import openAI
+import config
 
 # Response manager is a function that returns the maximum amount of responses from a full response set based on the 
 # tokenized allowances of the components of the prompt, and the maximum tokens available per prompt.

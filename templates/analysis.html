@@ -21,8 +21,12 @@
         <!-- FILE UPLOAD INPUT -->
         <div id="file-upload-div">
             <div class="mb-3">
-                <label for="fileUpload1" class="form-label"><strong>Select a CSV or Excel File:</strong></label>
+                <label for="fileUpload1" class="form-label"><strong>Select CSV or Excel Files:</strong></label>
                 <input type="file" class="form-control mb-3" id="fileUpload1" name="fileUpload[]" accept=".csv, .xls, .xlsx" multiple>
+                <label for="metricUpload" class="form-label">Select the file containing your metrics (CSV or Excel):</label>
+                <input type="file" class="form-control mb-3" id="metricUpload" name="metricUpload" accept=".csv, .xls, .xlsx" required="false">
+                <label for="surveyContext" class="form-label">Please provide context about your survey here:</label>
+                <input type="text" class="form-control mb-3" id="surveyContext" name="surveyContext">
                 <p>
                   <!-- Instructions for file structure -->
                   This tool accepts from 1-20 files containing survey data. <br>
@@ -31,7 +35,9 @@
                   uploading an excel file, the first survey question will be in cell A1, and the responses to that question <br>
                   are list in cells A2, A3, A4, and so on. The second question is in cell B1, and its responses are in <br>
                   cells B2, B3, B4, etc. <br>
-                  If you are selecting multiple files, you must be sure that both the content and order of your questions are identical across all files.
+                  If you are selecting multiple files, you must be sure that both the content and order of your questions are identical across all files.<br>
+                  <br>
+                  Please remember to provide rich context surrounding your survey.
                   <!-- Example file structure -->
                 </p>
             </div>  
