@@ -21,9 +21,8 @@ def response_manager(remaining_responses, current_question, current_question_met
     MAXIMUM_TOKENS = 4000
     COMPLETION_ALLOWANCE = 500
     
-    # Tokenize completion, question, metrics, instructions, and previous summary
+    # Tokenize question, metrics, instructions, and previous summary
     encoding = tiktoken.get_encoding("text-davinci-003")
-    completion_tokens = encoding.encode("[Completion]")
     question_tokens = encoding.encode(current_question)
     metric_tokens = encoding.encode(current_question_metric)
     instructions_tokens = encoding.encode(prompt_instructions)

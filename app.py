@@ -30,21 +30,24 @@ def analysis():
     # ***********  FULL ANALYSIS PATH  ***********
     if request.method == 'POST':
 
+        # GET ALL USER INPUTS IN LOCAL MEMORY
         # Get survey data file(s) uploaded stored in local memory
         files = request.files.getlist('fileUpload[]')  # Get the list of uploaded files
-
 
         # If user submits a metrics file, read metrics for each question into a list
         if request.files.get('metricUpload'):
             metrics = request.files.get('metricUpload')
-
-        # Otherwise, create a blank array that will store the ai-generated metrics
-        else:
+        else: # Otherwise, create a blank array that will store the ai-generated metrics
             metrics = []
 
-        
+        # If user submitted the single set of example metrics, read them into memory
+        if request.get('exampleMetrics'):
+            example_metrics = request.get('exampleMetrics')
+
         # Get survey context from form
-        survey_context = request.get('surveyContext')
+        suvery_context = request.get('surveyContext')
+
+
 
 
         # Read questions into local memory (should be consistent across all survey data files)
@@ -53,7 +56,6 @@ def analysis():
                 data = pd.read_csv(file)
             elif file.filename.endswith('.xls') or file.filename.endswith('.xlsx'):
                 data = pd.read_excel(file)
-
             questions = data.columns.tolist()
 
 
@@ -61,7 +63,11 @@ def analysis():
         if not metrics[0]:
             for i in range(questions):
                 current_question_for_metric = questions[i]
-                metrics[i] = metric_generator(current_question_for_metric)
+                if example_metrics:
+                    example_metrics = example_metrics
+                    metrics[i] = metric_generator(current_question_for_metric, suvery_context, example_metrics)
+                else:
+                    metrics[i] = metric_generator(current_question_for_metric, survey_context)
 
         
         # Create excel file that will store summarized results of analysis
