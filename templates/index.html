@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}AI Analysis{% endblock %}
+{% block head %}
+<style>
+  .expand-input {
+    width: 100%;
+    resize: horizontal;
+  }
+
+  body {
+    background-color: #333333;
+    color: white;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<h1>GPT Survey Analysis</h1>
+
+<div class="row ml-3">
+  <div class="col-lg-9">
+    <div class="mb-3">
+      <form id="fileUploadForm" name="fileUploadForm" action="/" method="POST" enctype="multipart/form-data">
+        <!-- FILE UPLOAD INPUT -->
+        <div id="file-upload-div">
+          <div class="mb-3">
+            <label for="fileUpload1" class="form-label"><strong>Select CSV or Excel Files:</strong></label>
+            <input type="file" class="form-control mb-3" id="fileUpload1" name="fileUpload[]" accept=".csv, .xls, .xlsx" multiple required>
+            <label for="metricUpload" class="form-label">Select the file containing your metrics (CSV or Excel):</label>
+            <input type="file" class="form-control mb-3" id="metricUpload" name="metricUpload" accept=".csv, .xls, .xlsx">
+            <label for="exampleMetrics" class="form-label">If you do not have metrics, copy and paste an example of a couple metrics that align with your analysis goals:</label>
+            <input type="text" class="form-control mb-3" id="exampleMetrics" name="exampleMetrics">
+            <label for="surveyContext" class="form-label">Please provide context about your survey here:</label>
+            <input type="text" class="form-control mb-3" id="surveyContext" name="surveyContext" required>
+            <p>
+              <!-- Instructions for file structure -->
+              This tool accepts from 1-20 files containing survey data. <br>
+              The files must be structured such that the survey questions are listed in the first row, and all <br>
+              responses for each question are listed in the column beneath the question. For instance, if you are <br>
+              uploading an excel file, the first survey question will be in cell A1, and the responses to that question <br>
+              are listed in cells A2, A3, A4, and so on. The second question is in cell B1, and its responses are in <br>
+              cells B2, B3, B4, etc. <br>
+              <!-- Example file structure -->
+
+              If you are selecting multiple files, you must be sure that both the content and order of your questions are identical across all files.<br>
+              <br>
+              Please remember to provide rich context surrounding your survey.<br>
+              <br>
+              If you are submitting a file containing metrics, please format it so that each question's metrics are listed 
+              sequentially in the first row of the file. For instance, the metrics for the first question 
+              are in cell A1, metrics for the second question are in cell A2, and so on. 
+              <!-- Example file structure for metrics file -->
+            </p>
+          </div>
+        </div>
+        <!-- Analyze button sends all files uploaded -->
+        <div class="mb-3 mt-3">
+          <button id="analyze" name="analyze" type="submit" class="btn btn-primary btn-lg">Analyze</button>
+        </div>
+      </form>
+      <!-- Clear button -->
+      <div class="mb-3 mt-3">
+      <button id="clear" name="clear" type="button" class="btn btn-secondary btn-lg">Clear Form</button>
+      </div>
+      </div>
+      <div class="mb-3">
+        <!-- Button(s) to download final file(s) containing summaries of analyses for each set of survey data -->
+        <!-- Button to download all the files in one click -->
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+  {% endblock %}

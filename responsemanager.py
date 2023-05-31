@@ -1,5 +1,4 @@
 import tiktoken
-import openAI
 import config
 
 # Response manager is a function that returns the maximum amount of responses from a full response set based on the 
@@ -20,43 +19,59 @@ def response_manager(remaining_responses, current_question, current_question_met
     # Define all variables and remaining response list in local memory
     MAXIMUM_TOKENS = 4000
     COMPLETION_ALLOWANCE = 500
+
+    # Formula for getting number of tokens from .encode:
+    def num_tokens_from_string(string: str, encoding_name: str) -> int:
+        encoding = tiktoken.get_encoding(encoding_name)
+        num_tokens = len(encoding.encode(string))
+        return num_tokens
     
     # Tokenize question, metrics, instructions, and previous summary
-    encoding = tiktoken.get_encoding("text-davinci-003")
-    question_tokens = encoding.encode(current_question)
-    metric_tokens = encoding.encode(current_question_metric)
-    instructions_tokens = encoding.encode(prompt_instructions)
+    encoding = tiktoken.get_encoding("p50k_base")
+    number_question_tokens = num_tokens_from_string(current_question, "p50k_base")
+    number_metric_tokens = num_tokens_from_string(current_question_metric, "p50k_base")
+    number_instructions_tokens = num_tokens_from_string(prompt_instructions, "p50k_base")
+
     if previous_summary:
-        summary_tokens = encoding.encode(previous_summary)
+        number_summary_tokens = num_tokens_from_string(previous_summary, "p50k_base")
     else:
-        summary_tokens = []
+        number_summary_tokens = 0
 
     # Tokenize decorative text for prompt
     filler_text = """The question is: 
         The metrics are: 
         This set of responses includes:
         The previous summary for your to add to is:"""
-    filler_text_tokens = encoding.encode(filler_text)
+    number_filler_text_tokens = num_tokens_from_string(filler_text, "p50k_base")
     
     # Total tokenized allowances to determine remainder available for responses
     total_allowance = (
-        MAXIMUM_TOKENS - COMPLETION_ALLOWANCE - len(question_tokens)
-        - len(metric_tokens) - len(instructions_tokens) - len(summary_tokens) - len(filler_text_tokens)
+        MAXIMUM_TOKENS - COMPLETION_ALLOWANCE - number_question_tokens
+        - number_metric_tokens - number_instructions_tokens - number_summary_tokens - number_filler_text_tokens
     )
     
     # Extract maximum amount of full responses from response list without exceeding allowance
-    response_set_tokens = []
+
+
+
+    # TODO: NEED TO THINK THROUGH THIS LOGIC MORE THOROUGHLY, NEED TO KEEP TRACK OF FULL SET OF REMAINING RESPONSES
+    response_set_tokens = 0
     response_set = []
-    remaining_responses_new = []
-    
+    remaining_responses_new = remaining_responses.copy()  # Create a copy of the list
+
     for response in remaining_responses:
-        response_tokens = encoding.encode(response)
-        
-        if len(response_set_tokens) + len(response_tokens) <= total_allowance:
-            response_set_tokens.extend(response_tokens)
+        response_str = str(response)
+        response_tokens = num_tokens_from_string(response_str, "p50k_base")
+
+        if response_set_tokens + response_tokens <= total_allowance:
+            response_set_tokens += response_tokens
             response_set.append(response)
-        else:
-            remaining_responses_new.append(response)
+
+    # Remove the responses from 'remaining_responses_new' that were included in 'response_set'
+    remaining_responses_new = [response for response in remaining_responses_new if response not in response_set]
+
+
+
     
     # Return the list of maximum response set and remaining responses
     return response_set, remaining_responses_new
