@@ -51,7 +51,7 @@ def metric_generator(question, context, example_metrics=None):
 
     prompt = """
     You are an expert in analyzing qualitative survey data. Your role is to develop metrics for the following survey question. Make sure you structure your metrics based on the overall context of the survey. Structure your metrics so that the number of responses corresponding to each metric can be tracked. Keep in mind the process for the analysis these metrics will be used in as well - chatGPT will be conducting the analysis by accepting the survey question, the metric for that question, a small number of responses to the survey question, and a summary of the analysis from the previous set of responses. These metrics will be the basis of the analysis summary, which will be built through iterative calls to chatGPT - the previous summary will be updated with analyses from the current set of responses, then that updated summary will be iterated over with a new set of survey responses. This process continues until there are no more responses to analyze, and a full summary of all responses is created. 
-    You will develop a set of metrics for this question based on the background above, as well as the survey context below. 
+    You will develop a set of metrics for this question based on the background above, as well as the survey context below, with a limit of 5 metrics. 
     You will respond only with the metrics you develop. It is important that you do not include any other filler text, or any text at all other than the metrics themselves.
     """
     number_prompt_tokens = num_tokens_from_string(prompt, "p50k_base")

@@ -79,8 +79,12 @@ def index():
         # Create an empty DataFrame
         df = pd.DataFrame()
 
+        # Create a temporary file for storing the Excel output
+        with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
+            output_filepath = temp_file.name
+
         # Create an Excel writer
-        writer = pd.ExcelWriter('analysis_output.xlsx', engine='xlsxwriter')
+        writer = pd.ExcelWriter(output_filepath, engine='xlsxwriter')
 
 
         # Process each uploaded file
@@ -124,7 +128,7 @@ def index():
         writer.close()
                 
         # Return page with download buttons for output file
-        return send_file('analysis_output.xlsx', as_attachment=True)
+        return send_file(output_filepath, as_attachment=True)
 
     else:
         return render_template('index.html')
