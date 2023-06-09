@@ -1,3 +1,5 @@
+# CONFIG
+import openai
 
 class Config(object):
     DEBUG = True
@@ -5,12 +7,10 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     SECRET_KEY = "this-is-a-super-secret-key"
+    openai.api_key = None
 
 config = {
     'development': DevelopmentConfig,
     'testing': DevelopmentConfig,
     'production': DevelopmentConfig
 }
-
-## Enter your Open API Key here
-OPENAI_API_KEY = '...'

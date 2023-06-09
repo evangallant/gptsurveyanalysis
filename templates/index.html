@@ -8,65 +8,134 @@
   }
 
   body {
-    background-color: #333333;
-    color: white;
+    background-color: #f5f5f5;
+    color: rgb(0, 0, 0);
+  }
+
+  .file-upload-form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .file-upload {
+    flex: 1;
+    margin-right: 20px;
+  }
+
+  .file-instructions {
+    flex: 2;
+  }
+
+  .file-structure-image {
+    width: 100%;
+    margin: 20px auto;
+  }
+
+  .btn-spacing {
+    margin-right: 15px;
+  }
+
+  .center-div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .estimates {
+    color:rgb(255, 0, 0)
   }
 </style>
 {% endblock %}
 {% block content %}
-<h1>GPT Survey Analysis</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+  <div class="container-fluid text-center">
+    <a class="navbar-brand"><strong>GPT Survey Analysis</strong></a>
+  </div>
+</nav>
 
-<div class="row ml-3">
-  <div class="col-lg-9">
-    <div class="mb-3">
-      <form id="fileUploadForm" name="fileUploadForm" action="/" method="POST" enctype="multipart/form-data">
-        <!-- FILE UPLOAD INPUT -->
-        <div id="file-upload-div">
+<div class="container">
+  <div class="row mt-3 mb-3">
+    <p>
+      This tool is designed to function most effectively when analyzing qualitative survey data with many discrete responses per question.
+      <strong>Please read and closely follow the Instructions for File Structure before beginning.</strong><br> The structure of your data determines whether the tool will function or not.
+      <br>
+      <p>
+        <strong>***IMPORTANT***</strong> Since the model is a generative AI, it is not built to count items. Thus, even when explicitly prompted, it is unable to generate quantitative statistics on the number of responses that correlate to each theme. This tool is to be exclusively for identifying themes and extracting relevant quotes.
+      </p>
+    </p>
+    {% if estimated_cost and min_minutes is not none and max_minutes is not none %}
+    <p class="estimates">
+      <strong>Estimated Cost: ${{ estimated_cost }} USD.
+        <br>
+        Time for Completion: between {{ min_minutes }} minutes {{ min_seconds }} seconds and {{ max_minutes }} minutes {{ max_seconds }} seconds.</strong>
+    </p>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col-lg-4 file-upload-form">
+      <div class="file-upload mr-3">
+        <form id="fileUploadForm" name="fileUploadForm" action="/" method="POST" enctype="multipart/form-data">
           <div class="mb-3">
-            <label for="fileUpload1" class="form-label"><strong>Select CSV or Excel Files:</strong></label>
+            <label for="fileUpload1" class="form-label"><strong>Survey Data: </strong>(accepts csv or excel files)</label>
             <input type="file" class="form-control mb-3" id="fileUpload1" name="fileUpload[]" accept=".csv, .xls, .xlsx" multiple required>
-            <label for="metricUpload" class="form-label">Select the file containing your metrics (CSV or Excel):</label>
-            <input type="file" class="form-control mb-3" id="metricUpload" name="metricUpload" accept=".csv, .xls, .xlsx">
-            <label for="exampleMetrics" class="form-label">If you do not have metrics, copy and paste an example of a couple metrics that align with your analysis goals:</label>
-            <input type="text" class="form-control mb-3" id="exampleMetrics" name="exampleMetrics">
-            <label for="surveyContext" class="form-label">Please provide context about your survey here:</label>
-            <input type="text" class="form-control mb-3" id="surveyContext" name="surveyContext" required>
-            <p>
-              <!-- Instructions for file structure -->
-              This tool accepts from 1-20 files containing survey data. <br>
-              The files must be structured such that the survey questions are listed in the first row, and all <br>
-              responses for each question are listed in the column beneath the question. For instance, if you are <br>
-              uploading an excel file, the first survey question will be in cell A1, and the responses to that question <br>
-              are listed in cells A2, A3, A4, and so on. The second question is in cell B1, and its responses are in <br>
-              cells B2, B3, B4, etc. <br>
-              <!-- Example file structure -->
+                        
+            <div id="thematicAnalysisForm">
+                <label for="thematicSurveyContext" class="form-label">Please provide context about your survey here:</label>
+                <textarea class="form-control mb-3" id="thematicSurveyContext" name="thematicSurveyContext" rows="3" required>{{ thematicSurveyContext|safe }}</textarea>
+            </div>
+            <h4><strong>Enter your API key:</strong></h4>
+            <div id="apiKey1">
+                <label for="apiKey1" class="form-label">Enter the first two characters of your API key (before the dash):</label>
+                <input class="form-control mb-3" type="password" id="apiKey1" name="apiKey1" rows="1" required value="{{ apiKey1|safe }}">
+            </div>
+            <div id="apiKey2">
+                <label for="apiKey2" class="form-label">Enter the remaining characters of your API key (after the dash - do not include the dash):</label>
+                <input class="form-control mb-3" type="password" id="apiKey2" name="apiKey2" rows="1" required value="{{ apiKey2|safe }}">
+            </div>
+            <div class="mt-3 mb-3">
+                <p><strong>*Your API key is NOT saved or stored after analysis*</strong></p>
+            </div>
+          </div>
+          
+          <div class="mb-3 mt-3 center-div">
+            <button id="estimate" name="action" type="submit" class="btn btn-primary btn-lg btn-spacing" value="estimate">Estimate Cost and Completion Time</button>
+            <button id="analyze" name="action" type="submit" class="btn btn-primary btn-lg" value="analyze">Analyze</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-              If you are selecting multiple files, you must be sure that both the content and order of your questions are identical across all files.<br>
-              <br>
-              Please remember to provide rich context surrounding your survey.<br>
-              <br>
-              If you are submitting a file containing metrics, please format it so that each question's metrics are listed 
-              sequentially in the first row of the file. For instance, the metrics for the first question 
-              are in cell A1, metrics for the second question are in cell A2, and so on. 
-              <!-- Example file structure for metrics file -->
+    <div class="col-lg-8">
+      <div class="mb-3 ml-3" id="themesFileInstructions">
+        <div class="row">
+          <div class="col-lg-12">
+            <p>
+              <strong>Instructions for File Structure:</strong>
             </p>
+            <p>
+              This tool accepts from 1-10 files containing survey data. The files must be structured such that the survey questions are listed in the first row, and all responses for each question are listed in the column beneath the question.
+            </p>
+            <p>
+              <strong>Additional Considerations</strong>
+            </p>
+            <p>
+              Since you are performing a thematic analysis, please remember to provide rich context surrounding your survey. 
+              This allows the model to understand what is important in your survey data, and will be more likely to extract relevant themes and concepts.<br>
+              <br>
+              Since this process costs money, it is advised to first estimate the cost and completion time before performing the analysis. You will need to reselect your files after estimating.
+            </p>
+            <br>
+            <div class="row">
+              <div class="col-lg-12 text-center">
+                <p><strong>Example File Structure for Survey Data:</strong></p>
+                <!-- Survey data file structure screenshot -->
+                <img src="static/images/Survey data format.png" alt="Example of survey data structure" class="img-fluid file-structure-image">
+              </div>
+            </div>
           </div>
         </div>
-        <!-- Analyze button sends all files uploaded -->
-        <div class="mb-3 mt-3">
-          <button id="analyze" name="analyze" type="submit" class="btn btn-primary btn-lg">Analyze</button>
-        </div>
-      </form>
-      <!-- Clear button -->
-      <div class="mb-3 mt-3">
-      <button id="clear" name="clear" type="button" class="btn btn-secondary btn-lg">Clear Form</button>
-      </div>
-      </div>
-      <div class="mb-3">
-        <!-- Button(s) to download final file(s) containing summaries of analyses for each set of survey data -->
-        <!-- Button to download all the files in one click -->
       </div>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
-  {% endblock %}
+</div>
+{% endblock %}
