@@ -46,7 +46,6 @@ By using these functions in tandem we can iterate over all the survey data in al
 Additional accessory functions include:
 1) Time Estimation, which tokenizes the input and calculates an estimated amount of time until completion based on average past completion times
 2) Exponential Backoff from the Tenacity library, which, in the event of a RateLimitError or other error from OpenAI, retries the analysis until it is successful.
-3) Metric paths and accessory functions, which are stored in the metricscode.py. These are deprecated, but you can integrate them into the app.py file if you want to try experimental metric development processes facilitated by OpenAI's API as well. They need refactoring and logic integration to be functional if included.
 
 
 LIMITATIONS
